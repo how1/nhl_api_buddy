@@ -85,6 +85,7 @@ public class TeamStatsController extends AppCompatActivity {
     }
 
     public void updateUI(ArrayList<TeamDataModel> teams){
+        //Removing old table items
         if (mTableLayout.getChildCount() > 1){
             mTableLayout.removeViews(1, mTableLayout.getChildCount() -1);
         }
