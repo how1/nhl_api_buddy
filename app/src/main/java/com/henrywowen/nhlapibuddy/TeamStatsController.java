@@ -65,6 +65,7 @@ public class TeamStatsController extends AppCompatActivity {
         });
 
     }
+    //Parse json response
     public void processStandings(JSONObject response){
         teams = new ArrayList<>();
         try {
