@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".TeamStatsController">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scrollbarStyle="insideOverlay">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TableLayout
+                        android:id="@+id/tableLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="11dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent">
+
+                        <TableRow
+                            android:id="@+id/top_row"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:clickable="true"
+                            android:background="@color/colorPrimaryDark">
+
+                            <Button
+                                android:id="@+id/name_column"
+                                android:layout_marginRight="125dp"
+                                android:gravity="left"
+                                android:tag="name"
+                                android:text="@string/name_column"/>
+
+                            <Button
+                                android:id="@+id/gp_column"
+                                android:layout_marginRight="12dp"
+                                android:gravity="left"
+                                android:tag="gp"
+                                android:text="@string/gp_column" />
+
+                            <Button
+                                android:id="@+id/w_column"
+                                android:layout_marginRight="12dp"
+                                android:gravity="left"
+                                android:tag="w"
+                                android:text="@string/w_column" />
+
+                            <Button
+                                android:id="@+id/l_column"
+                                android:layout_marginRight="16dp"
+                                android:gravity="left"
+                                android:tag="l"
+                                android:text="@string/l_column" />
+
+                            <Button
+                                android:id="@+id/ot_column"
+                                android:layout_marginRight="8dp"
+                                android:gravity="left"
+                                android:tag="ot"
+                                android:text="@string/ot_column" />
+
+                            <Button
+                                android:id="@+id/gf_column"
+                                android:layout_marginRight="16dp"
+                                android:gravity="left"
+                                android:tag="gf"
+                                android:text="@string/gf_column" />
+
+                            <Button
+                                android:id="@+id/ga_column"
+                                android:layout_marginRight="16dp"
+                                android:gravity="left"
+                                android:tag="ga"
+                                android:text="@string/ga_column" />
+
+                            <Button
+                                android:id="@+id/pts_column"
+                                android:layout_marginRight="12dp"
+                                android:gravity="left"
+                                android:tag="pts"
+                                android:text="@string/pts_column" />
+
+                            <Button
+                                android:id="@+id/dr_column"
+                                android:layout_marginRight="12dp"
+                                android:clickable="true"
+                                android:gravity="left"
+                                android:tag="dr"
+                                android:text="@string/dr_column" />
+
+                            <Button
+                                android:id="@+id/cr_column"
+                                android:layout_marginRight="12dp"
+                                android:gravity="left"
+                                android:tag="cr"
+                                android:text="@string/cr_column" />
+
+                            <Button
+                                android:id="@+id/lr_column"
+                                android:layout_marginRight="12dp"
+                                android:gravity="left"
+                                android:tag="lr"
+                                android:text="@string/lr_column" />
+
+                            <Button
+                                android:id="@+id/row_column"
+                                android:layout_marginRight="12dp"
+                                android:gravity="left"
+                                android:tag="row"
+                                android:text="@string/row_column" />
+
+                            <Button
+                                android:id="@+id/str_column"
+                                android:layout_marginRight="12dp"
+                                android:gravity="left"
+                                android:tag="str"
+                                android:text="@string/str_column" />
+
+
+                        </TableRow>
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+
+                        <TableRow
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </TableLayout>
+                </LinearLayout>
+            </ScrollView>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</android.support.constraint.ConstraintLayout>

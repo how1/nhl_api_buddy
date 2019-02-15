@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">NhlApiBuddy</string>
+    <string name="standingsButtonLabel">Standings</string>
+    <string name="name_column">Name</string>
+    <string name="gp_column">GP</string>
+    <string name="w_column">W</string>
+    <string name="l_column">L</string>
+    <string name="ot_column">OT</string>
+    <string name="pts_column">PTS</string>
+    <string name="ga_column">GA</string>
+    <string name="gf_column">GF</string>
+    <string name="row_column">ROW</string>
+    <string name="cr_column">CR</string>
+    <string name="dr_column">DR</string>
+    <string name="lr_column">LR</string>
+    <string name="str_column">STR</string>
+</resources>
