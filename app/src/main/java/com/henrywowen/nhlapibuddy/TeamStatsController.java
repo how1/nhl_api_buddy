@@ -43,7 +43,7 @@ public class TeamStatsController extends AppCompatActivity {
         setupTable();
         this.getStandings();
     }
-
+    //Retrieve standings from api
     public void getStandings(){
         final String standingsURL = "https://statsapi.web.nhl.com/api/v1/standings";
         AsyncHttpClient client = new AsyncHttpClient();
