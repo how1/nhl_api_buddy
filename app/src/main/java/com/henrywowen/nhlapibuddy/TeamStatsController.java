@@ -137,6 +137,7 @@ public class TeamStatsController extends AppCompatActivity {
     }
 
     public void setupTable(){
+        //Top row
         ArrayList<Button> columns = new ArrayList<Button>();
         columns.add((Button) findViewById(R.id.name_column));
         columns.add((Button) findViewById(R.id.gp_column));
@@ -152,7 +153,7 @@ public class TeamStatsController extends AppCompatActivity {
         columns.add((Button) findViewById(R.id.row_column));
         columns.add((Button) findViewById(R.id.str_column));
 
-
+        //Add OnClickListeners for sorting
         for(Button v: columns){
 //            v.setClickable(true);
             v.setOnClickListener(new View.OnClickListener() {
