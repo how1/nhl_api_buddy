@@ -9,6 +9,8 @@ import org.json.JSONException;
 public class TeamDataModel {
 
     private String teamName;
+    private String teamDiv;
+    private String teamConf;
     private String teamLosses;
     private String teamWins;
     private String teamOT;
@@ -23,8 +25,10 @@ public class TeamDataModel {
     private String teamStreakType;
     private String teamStreak;
 
-    public static TeamDataModel fromJson(JSONObject jsonObject){
+    public static TeamDataModel fromJson(JSONObject jsonObject, String div, String conf){
         TeamDataModel teamDataModel = new TeamDataModel();
+        teamDataModel.teamDiv = div;
+        teamDataModel.teamConf = conf;
         try {
             teamDataModel.teamName = jsonObject.getJSONObject("team").getString("name");
             teamDataModel.teamLosses = ((Integer)jsonObject.getJSONObject("leagueRecord").getInt("losses")).toString();
@@ -100,5 +104,13 @@ public class TeamDataModel {
 
     public String getTeamStreakType() {
         return teamStreakType;
+    }
+
+    public String getTeamDiv() {
+        return teamDiv;
+    }
+
+    public String getTeamConf() {
+        return teamConf;
     }
 }

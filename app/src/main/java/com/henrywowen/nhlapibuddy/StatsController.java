@@ -32,7 +32,7 @@ public class StatsController extends AppCompatActivity {
         standings.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent newStandingsIntent = new Intent(StatsController.this, TeamStatsController.class);
+                Intent newStandingsIntent = new Intent(StatsController.this, StandingsController.class);
                 startActivity(newStandingsIntent);
             }
         });

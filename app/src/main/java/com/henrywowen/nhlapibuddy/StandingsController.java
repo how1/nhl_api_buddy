@@ -1,48 +1,106 @@
 package com.henrywowen.nhlapibuddy;
 
+import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ImageButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpRequest;
 import com.loopj.android.http.JsonHttpResponseHandler;
-import com.loopj.android.http.RequestParams;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 
 import cz.msebera.android.httpclient.Header;
 
-public class TeamStatsController extends AppCompatActivity {
+public class StandingsController extends AppCompatActivity {
 
     private TableLayout mTableLayout;
     private ArrayList<TeamDataModel> teams;
-    private String currentSort = "none";
+    private ArrayList<RowDataModel> leagueRows;
+    private ArrayList<RowDataModel> atlRows;
+    private ArrayList<RowDataModel> metRows;
+    private ArrayList<RowDataModel> cenRows;
+    private ArrayList<RowDataModel> pacRows;
+    private ArrayList<RowDataModel> eastRows;
+    private ArrayList<RowDataModel> westRows;
+    private String currentSort = "pts";
+    private String organizedBy = "division";
+    private Boolean mDoneUpdatingUI = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_team_stats_controller);
+        setContentView(R.layout.activity_standings_controller);
         mTableLayout = findViewById(R.id.tableLayout);
         setupTable();
-        this.getStandings();
+
+        leagueRows = new ArrayList<>();
+        atlRows = new ArrayList<>();
+        metRows = new ArrayList<>();
+        cenRows = new ArrayList<>();
+        pacRows = new ArrayList<>();
+        eastRows = new ArrayList<>();
+        westRows = new ArrayList<>();
+
+        Button divButton = findViewById(R.id.division_standings);
+        Button confButton = findViewById(R.id.conference_standings);
+        Button leaButton = findViewById(R.id.league_standings);
+
+        divButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                organizedBy = "division";
+                mTableLayout.addView(getTableDivider("Atlantic"));
+                updateUI(atlRows);
+                mTableLayout.addView(getTableDivider("Metropolitan"));
+                updateUI(metRows);
+                mTableLayout.addView(getTableDivider("Central"));
+                updateUI(cenRows);
+                mTableLayout.addView(getTableDivider("Pacific"));
+                updateUI(pacRows);
+                mDoneUpdatingUI = true;
+            }
+        });
+
+        confButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                organizedBy = "conference";
+                sortTeams("pts", eastRows);
+                sortTeams("pts", westRows);
+                mTableLayout.addView(getTableDivider("Eastern"));
+                updateUI(eastRows);
+                mTableLayout.addView(getTableDivider("Western"));
+                updateUI(westRows);
+                mDoneUpdatingUI = true;
+            }
+        });
+
+        leaButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                organizedBy = "league";
+                sortTeams("pts", leagueRows);
+                updateUI(leagueRows);
+                mDoneUpdatingUI = true;
+            }
+        });
+
+        getStandings();
+
     }
+
     //Retrieve standings from api
     public void getStandings(){
         final String standingsURL = "https://statsapi.web.nhl.com/api/v1/standings";
@@ -72,26 +130,77 @@ public class TeamStatsController extends AppCompatActivity {
             JSONArray records = response.getJSONArray("records");
             for (int i = 0; i < records.length(); i++) {    //4                                 //For each division
                 JSONObject divisionRecords = records.getJSONObject(i);                  //There are four divisions
+                String div = divisionRecords.getJSONObject("division").getString("nameShort");
+                String conf = divisionRecords.getJSONObject("conference").getString("name");
                 JSONArray teamRecords = divisionRecords.getJSONArray("teamRecords");
                 for (int j = 0; j < teamRecords.length(); j++){ //8ish                      //Each division has a list of team records
                     JSONObject team = teamRecords.getJSONObject(j);
-                    teams.add(TeamDataModel.fromJson(team));
+                    teams.add(TeamDataModel.fromJson(team, div, conf));
                 }
             }
-            this.updateUI(teams);
+            createRows(teams);
+            if (organizedBy.equals("league")){
+                clearUI();
+                mTableLayout.addView(getTableDivider("League"));
+                this.updateUI(leagueRows);
+            } else if (organizedBy.equals("division")){
+                clearUI();
+                mTableLayout.addView(getTableDivider("Atlantic"));
+                this.updateUI(atlRows);
+                mTableLayout.addView(getTableDivider("Metropolitan"));
+                this.updateUI(metRows);
+                mTableLayout.addView(getTableDivider("Central"));
+                this.updateUI(cenRows);
+                mTableLayout.addView(getTableDivider("Pacific"));
+                this.updateUI(pacRows);
+            } else if (organizedBy.equals("conference")){
+                clearUI();
+                mTableLayout.addView(getTableDivider("Eastern"));
+                this.updateUI(eastRows);
+                mTableLayout.addView(getTableDivider("Western"));
+                this.updateUI(westRows);
+            }
+
         } catch (JSONException e){
             Log.e("NhlApiBuddy", e.toString());
         }
 
     }
 
-    public void updateUI(ArrayList<TeamDataModel> teams){
-        //Removing old table items
-        if (mTableLayout.getChildCount() > 1){
-            mTableLayout.removeViews(1, mTableLayout.getChildCount() -1);
+    public void clearUI(){
+        mTableLayout.removeViews(1, mTableLayout.getChildCount() -1);
+    }
+
+    public void updateUI(ArrayList<RowDataModel> rows){
+        int i = 0;
+        for (RowDataModel row: rows){
+            if (row.getTableRow().getParent() != null){
+                mTableLayout.removeView(row.getTableRow());
+            }
+            mTableLayout.addView(row.getTableRow());
+            if (i % 2 == 0){
+                row.getTableRow().setBackgroundColor(Color.LTGRAY);
+            } else {
+                row.getTableRow().setBackgroundColor(Color.WHITE);
+            }
+            i++;
         }
+    }
+
+    public TableRow getTableDivider(String label){
+        TableRow row = new TableRow(this);
+        TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
+        row.setLayoutParams(lp);
+        TextView rowLabel = new TextView(this);
+        rowLabel.setText(label);
+        rowLabel.setTextColor(Color.WHITE);
+        row.addView(rowLabel);
+        row.setBackgroundColor(Color.DKGRAY);
+        return row;
+    }
+
+    public void createRows(ArrayList<TeamDataModel> teams){
         for(TeamDataModel team: teams){
-            //Log.d("NhlApiBuddy", team.toString());
             TableRow row= new TableRow(this);
             TableRow.LayoutParams lp = new TableRow.LayoutParams(TableRow.LayoutParams.WRAP_CONTENT);
             row.setLayoutParams(lp);
@@ -134,8 +243,29 @@ public class TeamStatsController extends AppCompatActivity {
             row.addView(teamLeagueRank);
             row.addView(teamRow);
             row.addView(teamStreak);
-            mTableLayout.addView(row);
+            if (teams.indexOf(team) % 2 == 0){
+                row.setBackgroundColor(Color.LTGRAY);
+            }
+            RowDataModel rowDataModel = new RowDataModel(row, team);
+            leagueRows.add(rowDataModel);
+            switch (team.getTeamDiv()){
+                case "ATL": atlRows.add(rowDataModel);
+                break;
+                case "Metro": metRows.add(rowDataModel);
+                break;
+                case "CEN": cenRows.add(rowDataModel);
+                break;
+                case "PAC": pacRows.add(rowDataModel);
+                break;
+            }
+            switch (team.getTeamConf()){
+                case "Eastern": eastRows.add(rowDataModel);
+                break;
+                case "Western": westRows.add(rowDataModel);
+                break;
+            }
         }
+
     }
 
     public void setupTable(){
@@ -161,27 +291,51 @@ public class TeamStatsController extends AppCompatActivity {
             v.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    sortTeams(v.getTag().toString());
-                    updateUI(teams);
+                    if (organizedBy.equals("league")){
+                        sortTeams(v.getTag().toString(), leagueRows);
+                        clearUI();
+                        mTableLayout.addView(getTableDivider("League"));
+                        updateUI(leagueRows);
+                    } else if (organizedBy.equals("division")){
+                        sortTeams(v.getTag().toString(), atlRows);
+                        sortTeams(v.getTag().toString(), metRows);
+                        sortTeams(v.getTag().toString(), cenRows);
+                        sortTeams(v.getTag().toString(), pacRows);
+                        clearUI();
+                        mTableLayout.addView(getTableDivider("Atlantic"));
+                        updateUI(atlRows);
+                        mTableLayout.addView(getTableDivider("Metropolitan"));
+                        updateUI(metRows);
+                        mTableLayout.addView(getTableDivider("Central"));
+                        updateUI(cenRows);
+                        mTableLayout.addView(getTableDivider("Pacific"));
+                        updateUI(pacRows);
+                    } else if (organizedBy.equals("conference")){
+                        sortTeams(v.getTag().toString(), eastRows);
+                        sortTeams(v.getTag().toString(), westRows);
+                        clearUI();
+                        mTableLayout.addView(getTableDivider("Eastern"));
+                        updateUI(eastRows);
+                        mTableLayout.addView(getTableDivider("Pacific"));
+                        updateUI(westRows);
+                    }
                 }
             });
         }
-
-
-
     }
 
-    public void sortTeams(String t){
-        Log.d("NhlApiBuddy", "Sort by: " + t);
+    public void sortTeams(String t, ArrayList<RowDataModel> rows){
         final String tag = t;
         if (tag.equals(currentSort)){
-            Collections.reverse(teams);
+            Collections.reverse(rows);
             return;
         } else {
             currentSort = tag;
-            Collections.sort(teams, new Comparator<TeamDataModel>() {
+            Collections.sort(rows, new Comparator<RowDataModel>() {
                 @Override
-                public int compare(TeamDataModel o1, TeamDataModel o2) {
+                public int compare(RowDataModel r1, RowDataModel r2) {
+                    TeamDataModel o1 = r1.getTeamDataModel();
+                    TeamDataModel o2 = r2.getTeamDataModel();
                     switch (tag){
                         case "name":
                             return o1.getTeamName().compareTo(o2.getTeamName());
